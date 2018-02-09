@@ -43,18 +43,18 @@ C_MODE_END;
 
 my_bool javascript_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
-    if(args->arg_count < 2)
+    if(args->arg_count < 1)
     {
-        strcpy(message,"Wrong arguments number; must be 2 or more arguments");
+        strcpy(message,"Wrong arguments number; must be 1 or more arguments");
         return 1;
     }
-    if(args->arg_type[0] != STRING_RESULT || args->arg_type[1] != STRING_RESULT)
+    if(args->arg_type[0] != STRING_RESULT )
     {
-        strcpy(message,"Wrong arguments type; arg 1 and 2 must be strings");
+        strcpy(message,"Wrong arguments type; arg 1 must be strings");
         return 1;
     }
     
-    JSEnv* jsEnv = JSEnv::Create(args->args[0]);
+    JSEnv* jsEnv = JSEnv::Create();
     
     initid->ptr = (char*)jsEnv;
     
@@ -67,10 +67,6 @@ void javascript_deinit(UDF_INIT *initid )
    
     JSEnv* jsEnv = (JSEnv*)(initid->ptr);
     delete jsEnv;
-    /*isolate->Dispose();
-    v8::V8::Dispose();
-    v8::V8::ShutdownPlatform();*/
-    
 }
 
 char *javascript(UDF_INIT *initid ,
@@ -80,12 +76,12 @@ char *javascript(UDF_INIT *initid ,
     JSEnv* jsEnv = (JSEnv*)(initid->ptr);
     // Run the script to get the result.
     
-    std::string r = jsEnv->ExecuteScript( args->args[1],args);
+    std::string r = jsEnv->ExecuteJSFunction( args->args[0],args);
     
-    //printf("%s\n", r);
+    
     strcpy(result, r.c_str());
     *length = r.size();
-    return (char*)r.c_str();
+    return (char*)r.c_str(); //FIXME
 }
 
 

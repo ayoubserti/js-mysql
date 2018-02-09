@@ -11,9 +11,9 @@ typedef struct st_udf_args UDF_ARGS;
 class JSEnv{
 public:
     
-    static JSEnv* Create(const std::string& inFileName );
+    static JSEnv* Create();
     
-    std::string  ExecuteScript( const std::string& inFuncName ,UDF_ARGS* args);
+    std::string  ExecuteJSFunction( const std::string& inFuncName ,UDF_ARGS* args);
     inline v8::Isolate* GetIsolate();
 
     ~JSEnv();

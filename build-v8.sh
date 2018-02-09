@@ -21,17 +21,18 @@ ninja -C out.gn/x64.release/ v8_hello_world
 echo "=======> build finshed"
 
  cd ..
-mkdir v8
-mkdir v8/libs
-cp v8/out.gn/x64.release/obj/*.a v8/libs 
-cp v8/out.gn/x64.release/*.a v8/libs 
-cp v8/out.gn/x64.release/third_party/icu/*.a v8/libs 
-cp v8/out.gn/x64.release/icudtl.dat v8 
-cp v8/out.gn/x64.release/snapshot_blob.bin v8/ 
-cp v8/out.gn/x64.release/natives_blob.bin v8/ 
-cp v8/out.gn/x64.release/v8_hello_world v8/ 
-mkdir v8/include  
-cp -R v8/include v8/include
+mkdir deps
+mkdir deps/v8
+mkdir deps/v8/libs
+cp v8/out.gn/x64.release/obj/*.a deps/v8/libs 
+cp v8/out.gn/x64.release/*.a deps/v8/libs 
+cp v8/out.gn/x64.release/third_party/icu/*.a deps/v8/libs 
+cp v8/out.gn/x64.release/icudtl.dat deps/v8
+cp v8/out.gn/x64.release/snapshot_blob.bin deps/v8/ 
+cp v8/out.gn/x64.release/natives_blob.bin deps/v8/ 
+cp v8/out.gn/x64.release/v8_hello_world deps/v8/ 
+mkdir deps/v8/include  
+cp -R v8/include deps/v8/include
 
 echo "=======> file copyied to v8 folder"
 

@@ -19,7 +19,35 @@
 #include <mysql.h>
 #include <ctype.h>
 
+#define _GNU_SOURCE
+#include <dlfcn.h>
+
+
+
 std::unique_ptr<v8::Platform> JSEnv::sPlatform;
+
+static std::string  sLibPath;
+
+static std::string  sJSLoader;
+
+//hook the library load
+class RuntimeLoadHook
+{
+public:
+    RuntimeLoadHook()
+    {
+        Dl_info dl_info;
+        dladdr((void*)&RuntimeLoadHook::onload, &dl_info);
+        sLibPath = dl_info.dli_fname;
+        sJSLoader.assign(sLibPath.begin(), sLibPath.begin() + sLibPath.rfind("/"));
+        sJSLoader += "/Loader.js";
+        
+    }
+    static void onload(){}
+    
+};
+
+static RuntimeLoadHook sHook;
 
 //=== static function 
 static std::string _ReadFile(const std::string& name)
@@ -55,8 +83,9 @@ void JSEnv::Init()
         static bool isInit =false;
         if(!isInit)
         {
-            v8::V8::InitializeICUDefaultLocation("/Users/mac/perso/mysql-server/builds/sql/Debug/");
-            v8::V8::InitializeExternalStartupData("/Users/mac/perso/mysql-server/builds/sql/Debug/");
+            
+            v8::V8::InitializeICUDefaultLocation(sLibPath.c_str()); //load ICU data
+            v8::V8::InitializeExternalStartupData(sLibPath.c_str()); //load JSVM external snapshot
             sPlatform = v8::platform::NewDefaultPlatform();
             v8::V8::InitializePlatform(sPlatform.get());
             v8::V8::Initialize();
@@ -65,7 +94,7 @@ void JSEnv::Init()
         }
 }
 
-JSEnv* JSEnv::Create(const std::string& inFileName )
+JSEnv* JSEnv::Create( )
 {
     JSEnv *jsEnv = new JSEnv();
     JSEnv::Init();
@@ -87,7 +116,7 @@ JSEnv* JSEnv::Create(const std::string& inFileName )
     v8::Context::Scope context_scope(context);
     
     // Create a string containing the JavaScript source code.
-    std::string filecontent = _ReadFile(inFileName);
+    std::string filecontent = _ReadFile(sJSLoader);
     
     v8::Local<v8::String> source =
     v8::String::NewFromUtf8(isolate, filecontent.c_str(),
@@ -105,7 +134,7 @@ JSEnv* JSEnv::Create(const std::string& inFileName )
     return jsEnv;
 }
 
-std::string JSEnv::ExecuteScript( const std::string& inFuncName ,UDF_ARGS* args)
+std::string JSEnv::ExecuteJSFunction( const std::string& inFuncName ,UDF_ARGS* args)
 {
     //execute script in a new context
         v8::HandleScope handle_scope(m_isolate);
@@ -123,11 +152,11 @@ std::string JSEnv::ExecuteScript( const std::string& inFuncName ,UDF_ARGS* args)
         v8::Local<v8::Value> funcValue =  global->Get(funcName);
         v8::Local<v8::Object> funcObj = funcValue.As<v8::Object>();
         
-        int argc = args->arg_count -2;
+        int argc = args->arg_count -1;
         std::vector<v8::Local<v8::Value>> argv;
         
         
-        for (uint32_t i = 2; i< args->arg_count; ++i )
+        for (uint32_t i = 1; i< args->arg_count; ++i )
         {
             if(args->arg_type[i] ==STRING_RESULT )
             {
@@ -170,8 +199,11 @@ v8::Isolate* JSEnv::GetIsolate()
     return m_isolate;
 }
 
+
 JSEnv::~JSEnv()
 {
     m_isolate->Exit();
     m_isolate->Dispose();
 }
+
+

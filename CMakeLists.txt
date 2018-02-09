@@ -23,7 +23,7 @@ target_include_directories (mysql-js PUBLIC ${MYSQL_INCLUDE_DIR} "${CMAKE_SOURCE
 SET_TARGET_PROPERTIES(mysql-js
 PROPERTIES LINK_FLAGS "${CMAKE_SHARED_LIBRARY_C_FLAGS}")
 set_target_properties(mysql-js PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
-TARGET_LINK_LIBRARIES(mysql-js mysqld "${CMAKE_SOURCE_DIR}/deps/v8/libs/libv8_libbase.a" 
+TARGET_LINK_LIBRARIES(mysql-js mysqld dl "${CMAKE_SOURCE_DIR}/deps/v8/libs/libv8_libbase.a" 
         "${CMAKE_SOURCE_DIR}/deps/v8/libs/libv8_base.a" 
         "${CMAKE_SOURCE_DIR}/deps/v8/libs/libv8_libplatform.a"
         "${CMAKE_SOURCE_DIR}/deps/v8/libs/libicuuc.a"
