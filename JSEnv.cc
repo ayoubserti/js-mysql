@@ -41,7 +41,7 @@ public:
         dladdr((void*)&RuntimeLoadHook::onload, &dl_info);
         sLibPath = dl_info.dli_fname;
         sJSLoader.assign(sLibPath.begin(), sLibPath.begin() + sLibPath.rfind("/"));
-        sJSLoader += "/Loader.js";
+        //sJSLoader += "/Loader.js";
         
     }
     static void onload(){}

@@ -23,7 +23,7 @@ Context::Context(Isolate* isolate)
                 v8::FunctionTemplate::New(m_isolate, ReadFile));
     
     global->Set(v8::String::NewFromUtf8(
-                                        m_isolate, "require", v8::NewStringType::kNormal).ToLocalChecked(),
+                                        m_isolate, "requireNative", v8::NewStringType::kNormal).ToLocalChecked(),
                 v8::FunctionTemplate::New(m_isolate, Require));
     
     m_v8Context.Reset(m_isolate, v8::Context::New(m_isolate,NULL,global));
@@ -48,9 +48,10 @@ void Context::LoadScript(const std::string& script_path)
     
     v8::Context::Scope context_scope(context);
     
+    context->Global()->Set(String::NewFromUtf8(m_isolate, "root_path", v8::NewStringType::kNormal).ToLocalChecked(),String::NewFromUtf8(m_isolate, script_path.c_str(), v8::NewStringType::kNormal).ToLocalChecked());
     // Create a string containing the JavaScript source code.
     std::string filecontent;
-    if ( _ReadFile(script_path,filecontent))
+    if ( _ReadFile(script_path + "/Loader.js",filecontent))
     {
         v8::Local<v8::String> source =
         v8::String::NewFromUtf8(m_isolate, filecontent.c_str(),
@@ -62,7 +63,8 @@ void Context::LoadScript(const std::string& script_path)
         v8::Local<v8::Script> script =
         v8::Script::Compile(context, source).ToLocalChecked();
         
-        script->Run(context);
+        (void)script->Run(context);
+        
         
         if(trycatch.HasCaught())
         {
