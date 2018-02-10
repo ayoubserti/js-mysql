@@ -23,6 +23,7 @@
 #include <dlfcn.h>
 
 
+#include "Context.h"
 
 std::unique_ptr<v8::Platform> JSEnv::sPlatform;
 
@@ -107,91 +108,56 @@ JSEnv* JSEnv::Create( )
     // Create a stack-allocated handle scope.
     v8::HandleScope handle_scope(isolate);
     
-    // Create a new context.
-    v8::Local<v8::Context> context = v8::Context::New(isolate);
+    JSMySQL::Context* jscontext = new JSMySQL::Context(isolate);
     
-    jsEnv->m_context.Reset(isolate, context);
+    jsEnv->m_jsContext = jscontext;
     
-    // Enter the context for compiling and running the hello world script.
-    v8::Context::Scope context_scope(context);
-    
-    // Create a string containing the JavaScript source code.
-    std::string filecontent = _ReadFile(sJSLoader);
-    
-    v8::Local<v8::String> source =
-    v8::String::NewFromUtf8(isolate, filecontent.c_str(),
-                            v8::NewStringType::kNormal)
-    .ToLocalChecked();
-    
-        // Compile the source code.
-    v8::Local<v8::Script> script =
-    v8::Script::Compile(context, source).ToLocalChecked();
-        
-        // Run the script to get the result.
-    v8::Local<v8::Value> r = script->Run(context).ToLocalChecked();
-    
+    jscontext->LoadScript(sJSLoader);
     
     return jsEnv;
 }
 
 std::string JSEnv::ExecuteJSFunction( const std::string& inFuncName ,UDF_ARGS* args)
 {
-    //execute script in a new context
-        v8::HandleScope handle_scope(m_isolate);
+    v8::HandleScope handle_scope(m_isolate);
+    int argc = args->arg_count -1;
+    std::vector<v8::Local<v8::Value>> argv;
     
-    v8::Local<v8::Context> context = m_context.Get(m_isolate);
-    v8::Context::Scope context_scope(context);
+    std::string strResult;
     
-    v8::Local<v8::Value> r;
-    
-    //execute a function into the current context
-    v8::Local<v8::Object> global = context->Global();
-    v8::Local<v8::String> funcName = v8::String::NewFromUtf8(m_isolate,inFuncName.c_str());
-    if ( global->Has(funcName) )
+    for (uint32_t i = 1; i< args->arg_count; ++i )
     {
-        v8::Local<v8::Value> funcValue =  global->Get(funcName);
-        v8::Local<v8::Object> funcObj = funcValue.As<v8::Object>();
-        
-        int argc = args->arg_count -1;
-        std::vector<v8::Local<v8::Value>> argv;
-        
-        
-        for (uint32_t i = 1; i< args->arg_count; ++i )
+        if(args->arg_type[i] ==STRING_RESULT )
         {
-            if(args->arg_type[i] ==STRING_RESULT )
-            {
-                v8::Local<v8::String> argsStr = v8::String::NewFromUtf8(m_isolate, args->args[i]);
-                argv.push_back(argsStr);
-            }
-            else if (args->arg_type[i] == REAL_RESULT)
-            {
-                argv.push_back(v8::Number::New(m_isolate, *(double*)args->args[i]));
-            }
-            else if (args->arg_type[i] == INT_RESULT)
-            {
-                argv.push_back(v8::Integer::New(m_isolate, *(uint32_t*)args->args[i]));
-            }
-            else if (args->arg_type[i] == ROW_RESULT)
-            {
-                argc--;
-            }
-            else if (args->arg_type[i] == DECIMAL_RESULT)
-            {
-                v8::Local<v8::String> argsStr = v8::String::NewFromUtf8(m_isolate, args->args[i]);
-                argv.push_back(argsStr);
-            }
-            else
-            {
-                argc--;
-            }
+            v8::Local<v8::String> argsStr = v8::String::NewFromUtf8(m_isolate, args->args[i]);
+            argv.push_back(argsStr);
         }
-        r = v8::Number::New(m_isolate, 0);
-        r =funcObj->CallAsFunction(context, r, argc,&argv[0]).ToLocalChecked();
+        else if (args->arg_type[i] == REAL_RESULT)
+        {
+            argv.push_back(v8::Number::New(m_isolate, *(double*)args->args[i]));
+        }
+        else if (args->arg_type[i] == INT_RESULT)
+        {
+            argv.push_back(v8::Integer::New(m_isolate, *(uint32_t*)args->args[i]));
+        }
+        else if (args->arg_type[i] == ROW_RESULT)
+        {
+            argc--;
+        }
+        else if (args->arg_type[i] == DECIMAL_RESULT)
+        {
+            v8::Local<v8::String> argsStr = v8::String::NewFromUtf8(m_isolate, args->args[i]);
+            argv.push_back(argsStr);
+        }
+        else
+        {
+            argc--;
+        }
+        
     }
     
-    v8::String::Utf8Value utf8 (r);
-    if( *utf8 == NULL) return "";
-    return std::string(*utf8);
+    m_jsContext->ExecuteFunction(inFuncName, argv, strResult);
+    return strResult;
 }
 
 v8::Isolate* JSEnv::GetIsolate()

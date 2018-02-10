@@ -16,7 +16,7 @@ ENDIF()
 
 
 link_directories(${MYSQL_LIB_DIR})
-add_library (mysql-js MODULE "udf_javascript.cc" "JSEnv.h" "JSEnv.cc")
+add_library (mysql-js MODULE "udf_javascript.cc" "JSEnv.h" "JSEnv.cc" "Context.h" "Context.cc")
 
 target_include_directories (mysql-js PUBLIC ${MYSQL_INCLUDE_DIR} "${CMAKE_SOURCE_DIR}/deps/v8" "${CMAKE_SOURCE_DIR}/deps/v8/include")
 

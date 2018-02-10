@@ -8,6 +8,10 @@
 
 typedef struct st_udf_args UDF_ARGS;
 
+namespace JSMySQL {
+    class Context;
+}
+
 class JSEnv{
 public:
     
@@ -26,7 +30,8 @@ private:
     
     static std::unique_ptr<v8::Platform> sPlatform;
     
-    v8::Persistent<v8::Context> m_context;
+    JSMySQL::Context*  m_jsContext;
+    
    
 };
 
