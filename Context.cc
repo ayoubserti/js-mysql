@@ -190,12 +190,12 @@ void Context::Require(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     Isolate* isolate = args.GetIsolate();
     v8::HandleScope handlesope(isolate);
-    v8::Local<v8::ObjectTemplate> current_global = v8::ObjectTemplate::New(isolate);
     
     auto exportStr = String::NewFromUtf8(isolate,"exports",v8::NewStringType::kNormal).ToLocalChecked();
-    current_global->Set(exportStr, v8::ObjectTemplate::New(isolate));
-    
-    Local<v8::Context> context = v8::Context::New(isolate,nullptr,current_global);
+    Local<v8::Context> context = isolate->GetCurrentContext();
+    auto current_global = context->Global();
+    current_global->Set(exportStr, v8::Object::New(isolate));
+
     v8::Context::Scope scope(context);
     
     if(args.Length() > 0 && args[0]->IsString())
@@ -217,7 +217,13 @@ void Context::Require(const v8::FunctionCallbackInfo<v8::Value>& args)
             }
             if ( tryCach.HasCaught() )
             {
-                //exception caught;
+                auto exception  = tryCach.Exception();
+                auto exceptionStr = exception->ToString();
+                String::Utf8Value utf8(exceptionStr);
+                if(*utf8 != NULL)
+                {
+                    printf("JS Exception : %s",*utf8 );
+                }
             }
             
             auto globalObj = context->Global();
