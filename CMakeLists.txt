@@ -30,3 +30,17 @@ TARGET_LINK_LIBRARIES(mysql-js mysqld dl "${CMAKE_SOURCE_DIR}/deps/v8/libs/libv8
         "${CMAKE_SOURCE_DIR}/deps/v8/libs/libicui18n.a" 
         "${CMAKE_SOURCE_DIR}/deps/v8/libs/libv8_libsampler.a"
         "${CMAKE_SOURCE_DIR}/deps/v8/libs/libv8_external_snapshot.a")
+
+#install target 
+IF (WIN32)
+ELSE()
+  SET (PLUGIN_DESTINATION "/usr/local/mysql/lib/plugin/")
+
+  SET (myFiles "${CMAKE_SOURCE_DIR}/v8/out.gn/x64.release/icudtl.dat" 
+                "${CMAKE_SOURCE_DIR}/v8/out.gn/x64.release/natives_blob.bin"
+                "${CMAKE_SOURCE_DIR}/v8/out.gn/x64.release/snapshot_blob.bin"
+                "${CMAKE_SOURCE_DIR}/Loader.js"
+                "${CMAKE_SOURCE_DIR}/script.js")
+  install(TARGETS mysql-js LIBRARY DESTINATION "${PLUGIN_DESTINATION}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_WRITE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE) 
+  install(FILES ${myFiles} DESTINATION "${PLUGIN_DESTINATION}" PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_WRITE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE)
+ENDIF()

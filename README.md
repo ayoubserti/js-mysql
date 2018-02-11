@@ -58,8 +58,19 @@ It depends on:
  $ make 
  ````
 
- # Install & Test 
- Comming 
+ # Install
+ 
+ Install js-mysql into usual MySQL Server Plugin directory. 
+
+ ````
+ $ make install
+ ````
+ will copy `libmysql-js.so`, `icudtl.dat`, `Loader.js`, `script.js` ,`natives_blob.bin` and  `snapshot_blob.bin` into `/usr/local/mysql/lib/plugin/`.
+
+ # Tests
+
+ Coming 
+
 
 
 
