@@ -4,10 +4,35 @@
 
 # Example
 
+Start MySQL Server using `--plugins_dir` argument
+
+````
+mysqld --plugin_dir=path/to/plugin/directory
+````
+
+Then add `javascript` function to  MySQL Server
+
+````
+mysql> CREATE FUNCTION javascript RETURNS STRING SONAME "libmysql-js.so";
+Query OK, 0 rows affected (0,00 sec)
+
+````
+Then you may use any exported function form `script.js` file.
+
+````
+//script.js
+exports.myJSFunc = function (fname,lname)
+{
+    return lname.charAt(0)+'.'+fname; 
+}
+````
+
 `mysql> SELECT javascript("myJSFunc" , FirstName , LastName) FROM Persons;`
 
+`myJSFunc` catch `FirstName`and `LastName` from every row in `Persons` table and perform a concat operation and return.
+
 # Dependencies
-`js-mysql` is build as a shared library ( e.g libjs-mysql.so) and link with `mysqld` and a set of v8 static libraries. 
+`js-mysql` is build as a shared library ( e.g libmysql-js.so) and link with `mysqld` and a set of v8 static libraries. 
 
 It depends on:
  - `v8` a JavaScript Engine developed by Google and used in Chrome and NodeJS.
@@ -20,7 +45,7 @@ It depends on:
 
  ## building v8
 
- `v8` come with a seperate build file. use `build-v8.sh` to build on Mac OSX and Linux. It will run for 15min to 1hour depending on your system configuration and Internet connexion.
+ `v8` comes with a seperate build file. use `build-v8.sh` to build on Mac OSX and Linux. It will run for 15min to 1hour depending on your system configuration and Internet connexion.
 
  ## building js-mysql
 

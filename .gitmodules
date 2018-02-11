@@ -1,3 +1,0 @@
-[submodule "v8-build"]
-	path = v8-build
-	url = https://github.com/ayoubserti/v8-build.git
