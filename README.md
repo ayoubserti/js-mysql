@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ayoubserti/js-mysql.svg?branch=master)](https://travis-ci.org/ayoubserti/js-mysql)
 
 # About
 `js-mysql` is a set of MySQL UDF (user-defined function) functions to execute JavaScript within an SQL query.
