@@ -8,8 +8,8 @@ os:
 compiler:
   - clang
 
-services:
-  - mysql
+addons:
+  mariadb: '10.2'
 
 install:
   - mkdir deps
