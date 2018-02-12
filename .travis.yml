@@ -21,6 +21,7 @@ install:
 
 script: 
   - mkdir build
+  - cd build
   - cmake -DDOWNLOAD_PRE_BUILD_V8=on ..
   - make 
   - make install
