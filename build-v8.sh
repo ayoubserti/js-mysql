@@ -26,7 +26,7 @@ mkdir deps/v8
 mkdir deps/v8/libs
 cp v8/out.gn/x64.release/obj/*.a deps/v8/libs 
 cp v8/out.gn/x64.release/*.a deps/v8/libs 
-cp v8/out.gn/x64.release/third_party/icu/*.a deps/v8/libs 
+cp v8/out.gn/x64.release/obj/third_party/icu/*.a deps/v8/libs 
 cp v8/out.gn/x64.release/icudtl.dat deps/v8
 cp v8/out.gn/x64.release/snapshot_blob.bin deps/v8/ 
 cp v8/out.gn/x64.release/natives_blob.bin deps/v8/ 
