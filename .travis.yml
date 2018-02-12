@@ -20,6 +20,7 @@ install:
   - cd ../
 
 script: 
+  - mysql_config 
   - mkdir build
   - cd build
   - cmake -DDOWNLOAD_PRE_BUILD_V8=on ..
