@@ -12,9 +12,9 @@ services:
   - mysql
 
 install:
-  - curl https://s3.us-east-2.amazonaws.com/v8-build/v8-build-$TRAVIS_OS_NAME-x64-release.tar.gz > v8-prebuilt.tar.gz
   - mkdir deps
   - cd deps
+  - curl https://s3.us-east-2.amazonaws.com/v8-build/v8-build-$TRAVIS_OS_NAME-x64-release.tar.gz > v8-prebuilt.tar.gz
   - tar -xzf v8-prebuilt.tar.gz
   - mv build/ v8/
   - cd ../
