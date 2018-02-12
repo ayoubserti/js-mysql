@@ -10,8 +10,8 @@ IF (WIN32)
 #check MySQL Server headers
   set(MYSQL_INCLUDE_DIR "C:\\Program Files\\MySQL\\MySQL Server 5.6\\include\\" CACHE STRING "MySQL include directory")
 ELSE()
-  set(MYSQL_INCLUDE_DIR "/usr/local/mysql/include" CACHE STRING "MySQL include directory")
-  set (MYSQL_LIB_DIR "/usr/local/mysql/lib")
+  set(MYSQL_INCLUDE_DIR "/usr/local/mysql/include" "/usr/include/mysql" CACHE STRING "MySQL include directory")
+  set (MYSQL_LIB_DIR "/usr/local/mysql/lib" "/usr/lib/mysql") 
 ENDIF()
 
 
