@@ -3,22 +3,8 @@
 #include <my_sys.h>
 #include <mysql_com.h>
 
-#include <new>
-#include <vector>
-#include <algorithm>
-
-#if defined(MYSQL_SERVER)
-#include <m_string.h>		/* To get my_stpcpy() */
-#else
-/* when compiled as standalone */
-#include <string.h>
-#define my_stpcpy(a,b) stpcpy(a,b)
-#endif
 
 #include "JSEnv.h"
-
-#include <mysql.h>
-#include <ctype.h>
 
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(WIN32)
 #define DLLEXP __declspec(dllexport) 

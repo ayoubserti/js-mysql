@@ -2,22 +2,9 @@
 #include <my_sys.h>
 #include <mysql_com.h>
 
-#include <new>
-#include <vector>
-#include <algorithm>
-
-#if defined(MYSQL_SERVER)
-#include <m_string.h>		/* To get my_stpcpy() */
-#else
-/* when compiled as standalone */
-#include <string.h>
-#define my_stpcpy(a,b) stpcpy(a,b)
-#endif
 
 #include "JSEnv.h"
 
-#include <mysql.h>
-#include <ctype.h>
 
 #define _GNU_SOURCE
 #include <dlfcn.h>
@@ -50,32 +37,6 @@ public:
 
 static RuntimeLoadHook sHook;
 
-//=== static function 
-static std::string _ReadFile(const std::string& name)
-{
-    FILE* file = fopen(name.c_str(), "rb");
-    if (file == NULL) return "";
-    
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    rewind(file);
-    
-    char* chars = new char[size + 1];
-    chars[size] = '\0';
-    for (size_t i = 0; i < size;) {
-        i += fread(&chars[i], 1, size - i, file);
-        if (ferror(file)) {
-            fclose(file);
-            return "";
-        }
-    }
-    fclose(file);
-    
-    std::string r = chars;
-    delete [] chars;
-    
-    return r;
-}
 
 //== JSEnv class definition 
 
