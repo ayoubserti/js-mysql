@@ -3,8 +3,8 @@
 #define JS_ENV_H
 
 
-#include "include/libplatform/libplatform.h"
-#include "include/v8.h"
+#include "libplatform/libplatform.h"
+#include "v8.h"
 
 typedef struct st_udf_args UDF_ARGS;
 
