@@ -1,0 +1,7 @@
+# Build worker image (VM template)
+image: Visual Studio 2017
+
+services:
+  - mysql
+
+configuration: Release
