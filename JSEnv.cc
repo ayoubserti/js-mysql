@@ -1,13 +1,20 @@
+#if _WIN32
+//#include <Windows.h>
+
+
+#else
+#define _GNU_SOURCE
+#include <dlfcn.h>
+#endif
+
 #include <my_global.h>
 #include <my_sys.h>
 #include <mysql_com.h>
 
-
+#include <memory>
 #include "JSEnv.h"
 
 
-#define _GNU_SOURCE
-#include <dlfcn.h>
 
 
 #include "Context.h"
@@ -18,16 +25,24 @@ static std::string  sLibPath;
 
 static std::string  sJSLoader;
 
+
 //hook the library load
 class RuntimeLoadHook
 {
 public:
     RuntimeLoadHook()
     {
+#if _WIN32
+		//quick and dirty constants
+		sLibPath = "C:\\Program\ Files\\MySQL\\MySQL\ Server\ 5.7\\lib\\plugin\\js-mysql.dll";
+		sJSLoader.assign(sLibPath.begin(), sLibPath.begin() + sLibPath.rfind("\\"));
+
+#else
         Dl_info dl_info;
         dladdr((void*)&RuntimeLoadHook::onload, &dl_info);
         sLibPath = dl_info.dli_fname;
         sJSLoader.assign(sLibPath.begin(), sLibPath.begin() + sLibPath.rfind("/"));
+#endif
         //sJSLoader += "/Loader.js";
         
     }
