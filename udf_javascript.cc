@@ -67,7 +67,8 @@ char *javascript(UDF_INIT *initid ,
     
     strcpy(result, r.c_str());
     *length = r.size();
-    return (char*)r.c_str(); //FIXME
+    return result;
+    
 }
 
 

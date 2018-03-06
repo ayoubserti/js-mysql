@@ -2,8 +2,12 @@ language: c++
 cache: ccache
 
 os:
-  - osx
-  - linux
+  osx:
+    compiler:
+     - clang 
+  linux:
+    compiler:
+     - gcc
 
 compiler:
   - clang

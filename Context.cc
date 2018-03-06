@@ -31,7 +31,7 @@ Context::Context(Isolate* isolate)
 
 Context::~Context()
 {
-    m_v8Context.SetWeak();
+   // m_v8Context.SetWeak();
     m_v8Context.Reset();
 }
 

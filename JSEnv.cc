@@ -53,17 +53,24 @@ public:
 static RuntimeLoadHook sHook;
 
 
-//== JSEnv class definition 
+//== JSEnv class definition
+
+
 
 void JSEnv::Init()
 {
         static bool isInit =false;
         if(!isInit)
         {
-            
+#if V8_MAJOR_VERSION==5
+            v8::V8::InitializeICU();
+            sPlatform.reset(v8::platform::CreateDefaultPlatform());
+#else
             v8::V8::InitializeICUDefaultLocation(sLibPath.c_str()); //load ICU data
+           sPlatform = v8::platform::NewDefaultPlatform();
+#endif
             v8::V8::InitializeExternalStartupData(sLibPath.c_str()); //load JSVM external snapshot
-            sPlatform = v8::platform::NewDefaultPlatform();
+            
             v8::V8::InitializePlatform(sPlatform.get());
             v8::V8::Initialize();
             
@@ -76,8 +83,13 @@ JSEnv* JSEnv::Create( )
     JSEnv *jsEnv = new JSEnv();
     JSEnv::Init();
     v8::Isolate::CreateParams create_params;
-    create_params.array_buffer_allocator =
-    v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+ 
+#if V8_MAJOR_VERSION==5
+    jsEnv->m_allocator.reset( new ArrayBufferAllocator() );
+    create_params.array_buffer_allocator = jsEnv->m_allocator.get();
+#else
+       create_params.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+#endif
     v8::Isolate* isolate = v8::Isolate::New(create_params);
     jsEnv->m_isolate = isolate;
     isolate->Enter();

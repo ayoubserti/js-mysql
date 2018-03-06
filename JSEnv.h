@@ -31,6 +31,20 @@ private:
     static std::unique_ptr<v8::Platform> sPlatform;
     
     JSMySQL::Context*  m_jsContext;
+#if V8_MAJOR_VERSION==5
+    class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
+    public:
+        virtual void* Allocate(size_t length) {
+            void* data = AllocateUninitialized(length);
+            return data == NULL ? data : memset(data, 0, length);
+        }
+        virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
+        virtual void Free(void* data, size_t) { free(data); }
+    };
+    
+    std::unique_ptr<ArrayBufferAllocator> m_allocator;
+
+#endif
     
    
 };
