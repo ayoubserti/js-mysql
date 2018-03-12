@@ -1,0 +1,29 @@
+{
+  "name": "deployjs",
+  "version": "1.0.0",
+  "description": "deploy a JS module to MySQL",
+  "main": "deployjs",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayoubserti/js-mysql.git"
+  },
+  "keywords": [
+    "mysql",
+    "javascriptnudf"
+  ],
+  "author": "Ayoub Serti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ayoubserti/js-mysql/issues"
+  },
+  "homepage": "https://github.com/ayoubserti/js-mysql#readme",
+  "dependencies": {
+    "mysql": "^2.15.0"
+  }
+}

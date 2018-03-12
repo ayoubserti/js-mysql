@@ -34,11 +34,10 @@ if(NOT DOWNLOAD_PRE_BUILD_V8)
                   "${CMAKE_SOURCE_DIR}/Loader.js"
                   "${CMAKE_SOURCE_DIR}/script.js")
 ELSE()
-  SET (myFiles "${CMAKE_SOURCE_DIR}/deps/v8/icudtl.dat" 
-                  "${CMAKE_SOURCE_DIR}/deps/v8/natives_blob.bin"
-                  "${CMAKE_SOURCE_DIR}/deps/v8/snapshot_blob.bin"
-                  "${CMAKE_SOURCE_DIR}/Loader.js"
+if (NOT WIN32)
+  SET (myFiles   "${CMAKE_SOURCE_DIR}/Loader.js"
                   "${CMAKE_SOURCE_DIR}/script.js")
+endif()
 
 ENDIF()
 IF (WIN32)

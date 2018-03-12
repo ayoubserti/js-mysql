@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+(function(){
+
+    const mysql = require("mysql");
+
+    process.title = "deployJS";
+
+    if(process.argv.length<3)
+    {
+        console.log(" Usage: deployJS filename.js");
+        process.exit(1);
+    }
+    
+    
+    var module_path = process.env.PWD +"/"+ process.argv[2];
+    var module = require(module_path);
+    
+    //deploy all functions into MySQL
+
+    function CreateMySQLFunction(func_name,arg_nbr)
+    {
+        //create a MySQL Function from template
+        /*
+           CREATE FUNCTION `func_name` ( arg1 TEXT, arg2 TEXT,...)
+             RETURNS TEXT
+             DETERMINISTIC
+             BEGIN
+                DECLARE r TEXT;
+                SET r = javascript("func_name",arg1,arg2,..);
+                RETRUN r;
+            END
+         */
+
+         var query = "CREATE FUNCTION ";
+         query+= func_name;
+         query+= ' (';
+         var arg_list="";
+         for (var i = 0; i< arg_nbr;++i)
+         {
+            if(i!=0) 
+            {
+                query+=",";
+                arg_list+=",";
+            }
+            query+=" arg"+i;
+            query+=" TEXT";  
+            arg_list+="arg"+i;
+         }
+         query+=")";
+         query+="\n RETURNS TEXT ";
+         query+="\n DETERMINISTIC";
+         query+="\n BEGIN";
+         query+="\n  DECLARE r TEXT;";
+         query+="\n  SET r = javascript("+'"'+func_name+'"';
+         query+=" "+ arg_list +" );";
+         query+="\n  RETURN r;";
+         query+="\n END";
+
+         return query;
+    }
+
+    const readline = require('readline');
+
+    const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+    });
+
+    rl.question('database password' , (answer) => {
+       
+        var passwrd = answer;
+        var connection = mysql.createConnection({
+            host     : 'localhost',
+            user     : 'root',
+            password : passwrd,
+            database : "test"
+          });
+           
+          connection.connect();
+           
+         
+    
+        var functions_names = Object.getOwnPropertyNames(module);
+        functions_names.forEach(element => {
+            
+            var query =CreateMySQLFunction(element, module[element].length);
+            connection.query(query, function (error, results, fields) {
+                if(error) console.log(error.stack);
+                else{
+                    console.log("function "+ element + " deployed." )
+                }
+            });
+        });
+         
+        connection.end();
+      
+        rl.close();
+      });
+        
+   
+
+
+})()
