@@ -1,18 +1,39 @@
 #!/usr/bin/env node
 (function(){
 
-    const mysql = require("mysql");
-
     process.title = "deployJS";
 
-    if(process.argv.length<3)
+    const commandLineArgs = require('command-line-args')
+    const mysql = require("mysql");
+    const readline = require('readline');
+
+    const optionDefinitions = [
+        { name: 'password', alias: 'p', type: String },
+        { name: 'src', type: String, defaultOption: true },
+        { name: 'user', alias: 'u', type: String },
+        { name: 'database', alias: 'd', type: String },
+        { name: 'help', alias: 'h', type: Boolean }
+
+      ]
+    const options = commandLineArgs(optionDefinitions)
+
+    options.database = options.database || "test";
+    options.user = options.user || require("os").userInfo().username;
+   
+
+    if(process.argv.length<3 || options.help)
     {
-        console.log(" Usage: deployJS filename.js");
+        console.log(" Usage: deployJS [options] <filename.js>");
+        console.log("           --src               optional; for filename.js");
+        console.log("           --help      -h      show this help");
+        console.log("           --user      -u      mysql user name or current os user if ommited");
+        console.log("           --password  -p      mysql password or prompt for it");
+        console.log("           --database  -d      mysql database or test if ommited");
         process.exit(1);
     }
     
     
-    var module_path = process.env.PWD +"/"+ process.argv[2];
+    var module_path = process.env.PWD +"/"+ options.src;
     var module = require(module_path);
     
     //deploy all functions into MySQL
@@ -59,21 +80,13 @@
          return query;
     }
 
-    const readline = require('readline');
 
-    const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-    });
-
-    rl.question('database password' , (answer) => {
-       
-        var passwrd = answer;
+    function deploy(passwrd){
         var connection = mysql.createConnection({
             host     : 'localhost',
             user     : 'root',
             password : passwrd,
-            database : "test"
+            database : options.database
           });
            
           connection.connect();
@@ -81,23 +94,44 @@
          
     
         var functions_names = Object.getOwnPropertyNames(module);
-        functions_names.forEach(element => {
-            
-            var query =CreateMySQLFunction(element, module[element].length);
-            connection.query(query, function (error, results, fields) {
-                if(error) console.log(error.stack);
-                else{
-                    console.log("function "+ element + " deployed." )
-                }
+        var promises = functions_names.map(element => {
+            return new Promise(function(resolve,reject){
+                var query =CreateMySQLFunction(element, module[element].length);
+                connection.query(query, function (error, results, fields) {
+                    if(error) reject(error);
+                    else{
+                        console.log("function "+ element + " deployed." )
+                    }
+                });
             });
+            
+        });
+        Promise.all(promises).catch(function(err){
+            console.log(err);
         });
          
         connection.end();
       
-        rl.close();
-      });
-        
-   
+       
+    };
 
+    if(options.password=== null)
+    {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+           });
+       
+           rl.question('password: ' , (answer) => {
+              
+                deploy(answer);
+                rl.close();
+           });
+    }
+    else{
+        deploy(options.password);
+    }
+
+   
 
 })()

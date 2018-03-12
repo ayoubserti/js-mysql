@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/ayoubserti/js-mysql#readme",
   "dependencies": {
+    "command-line-args": "^5.0.2",
     "mysql": "^2.15.0"
   }
 }
