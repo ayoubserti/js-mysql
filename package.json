@@ -4,7 +4,11 @@
   "description": "deploy a JS module to MySQL",
   "main": "deployjs",
   "directories": {
-    "test": "tests"
+    "test": "tests",
+    "bin": "./bin"
+  },
+  "bin": {
+    "deployjs": "./bin/deployjs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,7 +19,8 @@
   },
   "keywords": [
     "mysql",
-    "javascriptnudf"
+    "javascript",
+    "udf"
   ],
   "author": "Ayoub Serti",
   "license": "ISC",
