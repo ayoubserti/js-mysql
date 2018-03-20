@@ -16,17 +16,11 @@ addons:
   mariadb: '10.2'
 
 install:
-  - mkdir deps
-  - cd deps
-  - curl https://s3.us-east-2.amazonaws.com/v8-build/v8-build-$TRAVIS_OS_NAME-x64-release.tar.gz > v8-prebuilt.tar.gz
-  - tar -xzf v8-prebuilt.tar.gz
-  - mv build/ v8
-  - cd ../
-
+  - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install libv8; else brew install v8; fi
 script: 
   - mkdir build
   - cd build
-  - cmake -DDOWNLOAD_PRE_BUILD_V8=on ..
+  - cmake .. 
   - make 
   - make install
   - cd ..
