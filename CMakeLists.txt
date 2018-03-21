@@ -15,17 +15,20 @@ ELSE()
 ENDIF()
 
 
-link_directories(${MYSQL_LIB_DIR} /usr/local/opt/v8/lib)
+link_directories(${MYSQL_LIB_DIR} /usr/local/opt/v8/lib /opt/libv8-5.9/lib )
 
 add_library (mysql-js MODULE "udf_javascript.cc" "JSEnv.h" "JSEnv.cc" "Context.h" "Context.cc")
 
-target_include_directories (mysql-js PUBLIC ${MYSQL_INCLUDE_DIR} "/usr/local/opt/v8/include")
+target_include_directories (mysql-js PUBLIC ${MYSQL_INCLUDE_DIR} "/usr/local/opt/v8/include"  "/opt/libv8-5.9/include")
 
 SET_TARGET_PROPERTIES(mysql-js
 PROPERTIES LINK_FLAGS "${CMAKE_SHARED_LIBRARY_C_FLAGS}")
 set_target_properties(mysql-js PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
-TARGET_LINK_LIBRARIES(mysql-js  dl libv8_base.a libv8_libbase.a libv8_libplatform.a libv8_snapshot.a )
-
+IF(APPLE)
+  TARGET_LINK_LIBRARIES(mysql-js  dl libv8_base.a libv8_libbase.a libv8_libplatform.a libv8_snapshot.a )
+ELSE()
+  TARGET_LINK_LIBRARIES(mysql-js  dl v8_base v8_libbase v8_libplatform v8 icui18n icuuc )
+ENDIF()
 #install target 
 if(NOT DOWNLOAD_PRE_BUILD_V8)
   SET (myFiles "${CMAKE_SOURCE_DIR}/v8/out.gn/x64.release/icudtl.dat" 
