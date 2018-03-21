@@ -18,7 +18,7 @@ jobs:
       install: brew install v8
 
 addons:
-  mariadb: '10.2'
+  - mysql
 
 script: 
   - mkdir build
