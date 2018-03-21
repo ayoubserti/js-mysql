@@ -3,6 +3,8 @@
 #include <my_sys.h>
 #include <mysql_com.h>
 
+#undef min
+#undef max
 
 #include "JSEnv.h"
 
