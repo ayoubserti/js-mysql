@@ -3,19 +3,18 @@ cache: ccache
 
 sudo: required
 
-os:
-  osx:
-    compiler:
-     - clang 
-    install:
-     - brew install v8
-  linux:
-    compiler:
-     - gcc
-    install:
-     - sudo add-apt-repository ppa:pinepain/libv8-archived -y
-     - sudo apt-get update -q
-     - sudo apt-get install libv8-5.9-dev -y
+
+jobs:
+  include:
+    - os: linux
+      compiler: gcc
+      install: 
+       - sudo add-apt-repository ppa:pinepain/libv8-archived -y
+       - sudo apt-get update -q
+       - sudo apt-get install libv8-5.9-dev -y
+    - os: osx
+      compiler: clang
+      install: brew install v8
 
 addons:
   mariadb: '10.2'
