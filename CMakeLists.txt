@@ -27,7 +27,7 @@ set_target_properties(mysql-js PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED 
 IF(APPLE)
   TARGET_LINK_LIBRARIES(mysql-js  dl libv8_base.a libv8_libbase.a libv8_libplatform.a libv8_snapshot.a )
 ELSE()
-  TARGET_LINK_LIBRARIES(mysql-js  dl v8_base v8_libbase v8_libplatform v8 icui18n icuuc )
+  TARGET_LINK_LIBRARIES(mysql-js  dl  v8_libbase v8_libplatform v8 icui18n icuuc )
 ENDIF()
 #install target 
 if(NOT DOWNLOAD_PRE_BUILD_V8)
