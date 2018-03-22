@@ -2,7 +2,7 @@
 #ifndef JS_ENV_H
 #define JS_ENV_H
 
-
+#include <cstdlib>
 #include "libplatform/libplatform.h"
 #include "v8.h"
 
