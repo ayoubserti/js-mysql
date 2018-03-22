@@ -3,6 +3,7 @@
 #define JS_ENV_H
 
 #include <cstdlib>
+#include <cstring>
 #include "libplatform/libplatform.h"
 #include "v8.h"
 
