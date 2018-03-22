@@ -10,9 +10,12 @@ jobs:
       compiler: gcc
       install: 
        - sudo add-apt-repository ppa:pinepain/libv8-archived -y
+       - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
        - sudo apt-get update -q
        - sudo apt-get install libv8-5.9-dev -y
        - sudo apt-get install libmysqlclient-dev
+       - sudo apt-get install -qq g++-5
+       - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90
     - os: osx
       compiler: clang
       install: brew install v8
