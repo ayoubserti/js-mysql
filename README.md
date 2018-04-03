@@ -68,6 +68,39 @@ It depends on:
  ````
  will copy `libmysql-js.so`, `icudtl.dat`, `Loader.js`, `script.js` ,`natives_blob.bin` and  `snapshot_blob.bin` into `/usr/local/mysql/lib/plugin/`.
 
+
+ # Tools
+
+ This repository came with a utility to deploy JS script into MySQL. First you need nodejs/npm installed. Install the utility script 
+
+ ```
+    npm install 
+ ``` 
+
+```
+    $ deployjs --help
+    Usage: deployJS [options] <filename.js>
+           --src               optional; for filename.js
+           --help      -h      show this help
+           --user      -u      mysql user name or current os user if ommited
+           --password  -p      mysql password or prompt for it
+           --database  -d      mysql database or test if ommited
+``` 
+
+Then deploying JS script become straightforward:
+
+```
+    $ deployjs -u root -d test --src script.js -p
+    $ Enter password: 
+```
+
+You will be prompted to enter MySQL user password. 
+
+*Tips:* 
+ - the MySQL user need to have right to alter `mysql.func` table
+ - the current system user need write permission on mysql plugin directory
+
+
  # Tests
 
  Coming 
