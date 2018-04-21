@@ -13,22 +13,24 @@ mysqld --plugin_dir=path/to/plugin/directory
 
 Then add `javascript` function to  MySQL Server
 
-````
+````sql
 mysql> CREATE FUNCTION javascript RETURNS STRING SONAME "libmysql-js.so";
-Query OK, 0 rows affected (0,00 sec)
-
 ````
+```
+Query OK, 0 rows affected (0,00 sec)
+```
 Then you may use any exported function form `script.js` file.
 
-````
+````javascript
 //script.js
 exports.myJSFunc = function (fname,lname)
 {
     return lname.charAt(0)+'.'+fname; 
 }
 ````
-
-`mysql> SELECT javascript("myJSFunc" , FirstName , LastName) FROM Persons;`
+```sql
+mysql> SELECT javascript("myJSFunc" , FirstName , LastName) FROM Persons;
+```
 
 `myJSFunc` catch `FirstName`and `LastName` from every row in `Persons` table and perform a concat operation and return.
 
@@ -50,7 +52,7 @@ It depends on:
 
  ## building js-mysql
 
- ````
+ ````bash
  $ git clone https://github.com/ayoubserti/js-mysql.git
  $ ./build-v8.sh  
  $ mkdir build
@@ -63,7 +65,7 @@ It depends on:
  
  Install js-mysql into usual MySQL Server Plugin directory. 
 
- ````
+ ````bash
  $ make install
  ````
  will copy `libmysql-js.so`, `icudtl.dat`, `Loader.js`, `script.js` ,`natives_blob.bin` and  `snapshot_blob.bin` into `/usr/local/mysql/lib/plugin/`.
@@ -73,12 +75,14 @@ It depends on:
 
  This repository came with a utility to deploy JS script into MySQL. First you need nodejs/npm installed. Install the utility script 
 
- ```
+ ```bash
     npm install 
  ``` 
 
-```
+```bash
     $ deployjs --help
+```
+```
     Usage: deployJS [options] <filename.js>
            --src               optional; for filename.js
            --help      -h      show this help
@@ -89,7 +93,7 @@ It depends on:
 
 Then deploying JS script become straightforward:
 
-```
+```bash
     $ deployjs -u root -d test --src script.js -p
     $ Enter password: 
 ```
